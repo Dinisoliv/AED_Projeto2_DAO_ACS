@@ -16,7 +16,7 @@ correspondente grafo orientado transposto.
 2. Módulo BELLMAN-FORD: desenvolver a função que, dado um grafo, sem pesos
 associados às arestas, e um vértice inicial, constrói a árvore dos caminhos mais
 curtos entre esse vértice inicial e cada um dos outros vértices alcançáveis, usando o
-algoritmo de Bellman-Ford. Consultar, por exemplo, a Wikipédia.
+algoritmo de Bellman-Ford.
 3. Módulo TRANSITIVE-CLOSURE: desenvolver a função que permite, dado um
 grafo orientado, sem pesos associados aos arcos, construir o grafo orientado que é o
 seu fecho transitivo. Esse grafo tem os mesmos vértices que o grafo original,
