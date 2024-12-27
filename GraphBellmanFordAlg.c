@@ -6,10 +6,10 @@
 // GraphBellmanFord - Bellman-Ford Algorithm
 //
 
-// Student Name :
-// Student Number :
-// Student Name :
-// Student Number :
+// Student Name : Dinis Oliveira
+// Student Number : 119193
+// Student Name : André Silva
+// Student Number : 119480
 
 /*** COMPLETE THE GraphBellmanFordAlgExecute FUNCTION ***/
 
@@ -18,6 +18,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <limits.h>
 
 #include "Graph.h"
 #include "IntegersStack.h"
@@ -50,7 +51,7 @@ GraphBellmanFordAlg* GraphBellmanFordAlgExecute(Graph* g,
   unsigned int numVertices = GraphGetNumVertices(g);
 
   //
-  // TO BE COMPLETED !!
+  // TO BE COMPLETED ...
   //
   // CREATE AND INITIALIZE
   // result->marked
@@ -66,8 +67,127 @@ GraphBellmanFordAlg* GraphBellmanFordAlgExecute(Graph* g,
   
   // THE ALGORTIHM TO BUILD THE SHORTEST-PATHS TREE
 
-  return NULL;
+  // Step 1
+  // Create arrays
+  result->distance = (int*)malloc(numVertices * sizeof(int));
+  result->predecessor = (int*)malloc(numVertices * sizeof(int));
+  result->marked = (unsigned int*)malloc(numVertices * sizeof(unsigned int));
+  // Check if the memory allocation was successful
+  if (result->distance == NULL || result->predecessor == NULL || result->marked == NULL)
+  {
+    free(result->distance);
+    free(result->predecessor);
+    free(result->marked);
+    free(result);
+    return NULL;
+  }
+  // Initialize the arrays
+  for (unsigned i = 0; i < numVertices; i++)
+  {
+    result->distance[i] = INT_MAX;
+    result->predecessor[i] = -1;
+    result->marked[i] = 0;
+  }
+  result->distance[startVertex] = 0;
+  
+  // Step 2
+  // Relax all edges V-1 times
+  for (unsigned v = 1; v < numVertices-1; v++)
+  {
+    int* adjList = GraphGetAdjacentsTo(g, v);
+    for (unsigned int j = 0; j < GraphGetVertexOutDegree(g, v); j++)
+    {
+      unsigned int w = adjList[j];
+      if (result->distance[v] + 1 < result->distance[w])
+      {
+        result->distance[w] = result->distance[v] + 1;
+        result->predecessor[w] = v;
+      }
+    }
+    free(adjList);
+  }
+
+  // Step 3 
+  // Check for negative cycles
+  for (unsigned int v = 0; v < numVertices; v++) {
+    int* adjList = GraphGetAdjacentsTo(g, v);
+    for (unsigned int i = 0; i < GraphGetVertexOutDegree(g, v); i++) {
+      unsigned int w = adjList[i];
+      if (result->distance[v] != INT_MAX && result->distance[v] + 1 < result->distance[w]) {
+        free(result->distance);
+        free(result->predecessor);
+        free(result->marked);
+        free(result);
+        free(adjList);
+        return NULL;
+      }
+    }
+    free(adjList);
+  }
+
+  // Step 3.5 
+  // Check for negative cycles
+  for (unsigned int v = 0; v < numVertices; v++) {
+    int* adjList = GraphGetAdjacentsTo(g, v);
+    for (unsigned int i = 0; i < GraphGetVertexOutDegree(g, v); i++) {
+    unsigned int w = adjList[i];
+      if (result->distance[v] != INT_MAX && result->distance[v] + 1 < result->distance[w]) {
+        result->predecessor[w] = v;
+      }
+    }
+  }
+  return result;
 }
+
+/*
+  // Step 3 
+  // Check for negative cycles
+  for (unsigned int v = 0; v < numVertices; v++) {
+      int* adjList = GraphGetAdjacentsTo(g, v);
+      for (unsigned int i = 0; i < GraphGetVertexOutDegree(g, v); i++) {
+          unsigned int w = adjList[i];
+          if (result->distance[v] != INT_MAX && result->distance[v] + 1 < result->distance[w]) {
+              result->predecessor[w] = v;
+              // A negative cycle exists; find a vertex on the cycle 
+              bool* visited = (bool*)calloc(numVertices, sizeof(bool));
+              visited[w] = true;
+              while (!visited[v]) {
+                  visited[v] = true;
+                  v = result->predecessor[v];
+              }
+              // v is a vertex in a negative cycle, find the cycle itself
+              int cycleStart = v;
+              int* ncycle = (int*)malloc(numVertices * sizeof(int));
+              int cycleLength = 0;
+              ncycle[cycleLength++] = v;
+              w = result->predecessor[v];
+              while (w != cycleStart) {
+                  ncycle[cycleLength++] = w;
+                  w = result->predecessor[w];
+              }
+              ncycle[cycleLength++] = cycleStart;
+
+              printf("Graph contains a negative-weight cycle: ");
+              for (int k = cycleLength - 1; k >= 0; k--) {
+                  printf("%d ", ncycle[k]);
+              }
+              printf("\n");
+
+              free(visited);
+              free(ncycle);
+              free(result->distance);
+              free(result->predecessor);
+              free(result->marked);
+              free(result);
+              free(adjList);
+              return NULL;
+          }
+      }
+      free(adjList);
+    }
+  return result;
+  }
+*/
 
 void GraphBellmanFordAlgDestroy(GraphBellmanFordAlg** p) {
   assert(*p != NULL);
@@ -127,7 +247,7 @@ void GraphBellmanFordAlgShowPath(const GraphBellmanFordAlg* p, unsigned int v) {
   Stack* s = GraphBellmanFordAlgPathTo(p, v);
 
   while (StackIsEmpty(s) == 0) {
-    printf("%d ", StackPop(s));
+    printf("%d", StackPop(s));
   }
 
   StackDestroy(&s);

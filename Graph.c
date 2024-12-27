@@ -144,16 +144,15 @@ Graph* GraphCreateTranspose(const Graph* g) {
   
   if (ListIsEmpty(vertices) == 0){
     ListMoveToHead(vertices);
-    for (unsigned int i = 0; i < g->numVertices; i++)
+    for (int i = 0; i < g->numVertices; i++, ListMoveToNext(vertices))
     {
       List *edges = ((struct _Vertex*)ListGetCurrentItem(vertices))->edgesList;
       if (ListIsEmpty(edges) == 0){
         ListMoveToHead(edges);
-        for (unsigned int j = 0; j < ListGetSize(edges); j++)
+        for (unsigned int j = 0; j < ListGetSize(edges); j++, ListMoveToNext(edges))
         {
           struct _Edge* e = (struct _Edge*)ListGetCurrentItem(edges);
           GraphAddEdge(transpose, e->adjVertex, i);
-          ListMoveToNext(edges);
         }
       }
     } 
