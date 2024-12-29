@@ -88,61 +88,55 @@ GraphBellmanFordAlg* GraphBellmanFordAlgExecute(Graph* g,
     result->predecessor[i] = -1;
   }
   result->distance[startVertex] = 0;
-  
-  // Step 2: Relax all edges V-1 times
-for (unsigned int i = 0; i < numVertices - 1; i++) {
-    for (unsigned int v = 0; v < numVertices; v++) {
-        // Get the adjacency list for vertex v
-        int* adjList = GraphGetAdjacentsTo(g, v);
-
-        // Get the degree (number of adjacent vertices) for vertex v
-        int vertexDegree = GraphIsDigraph(g) ? GraphGetVertexOutDegree(g, v) : GraphGetVertexDegree(g, v);
-
-        // Relax edges from vertex v to its adjacent vertices
-        for (int j = 0; j < vertexDegree; j++) {
-            unsigned int w = adjList[j];  // Adjacent vertex
-            if (result->distance[v] != INT_MAX && result->distance[v] + 1 < result->distance[w]) {
-                result->distance[w] = result->distance[v] + 1;
-                result->predecessor[w] = v;
-            }
-        }
-
-        // Free the adjacency list for this vertex
-        free(adjList);
-    }
-}
-
 
   // Step 2
   // Relax all edges V-1 times
-//  for (unsigned int i = 1; i < numVertices-1; i++)
-//  {
-//    int relaxed = 0;  // Flag - bool
-//    for (unsigned int v = 0; v < numVertices; v++)
-//    {
-//      unsigned int* adjList = GraphGetAdjacentsTo(g, v);
-//      int vertexDegree = GraphIsDigraph(result->graph) ? GraphGetVertexOutDegree(g, v) : GraphGetVertexDegree(g, v);
-//
-//      for (unsigned int j = 0; j < (unsigned)vertexDegree; j++)
-//      {
-//        unsigned int a = adjList[j];
-//
-//        if (result->distance[v] && result->distance[v] + 1 < result->distance[a])
-//        {
-//          result->distance[a] = result->distance[v] + 1;
-//          result->predecessor[a] = v;
-//          relaxed = 1;
-//        }
-//      }
-//      free(adjList);
-//    }
-//    if (!relaxed)
-//    {
-//      break;
-//    }
-//    //printf("\nIteration/Debg %d.5\n", i);
-//    //21GraphBellmanFordAlgDisplayDOT(result);
-//  }
+  for (unsigned int i = 1; i < numVertices-1; i++)
+  {
+    int relaxed = 0;  // Flag - bool
+    for (unsigned int v = 0; v < numVertices; v++)
+    {
+      unsigned int* adjList = GraphGetAdjacentsTo(g, v);
+      if (adjList == NULL)
+      {
+        continue;
+      }
+
+      // Relax edges from vertex v to its adjacent vertices
+      for (unsigned int j = 1; j <= adjList[0]; j++) {
+        unsigned int w = adjList[j];  // Adjacent vertex
+        if (result->distance[v] != INT_MAX && result->distance[v] + 1 < result->distance[w]) {
+          result->distance[w] = result->distance[v] + 1;
+          result->predecessor[w] = v;
+          relaxed = 1;
+        }
+      }      
+      free(adjList);
+    }
+    if (!relaxed)
+    {
+      break;
+    }
+  }
+  /*
+  // Step 3 - simple
+  // Check for negative cycles
+  for (unsigned int v = 0; v < numVertices; v++) {
+    unsigned int* adjList = GraphGetAdjacentsTo(g, v);
+    for (unsigned int i = 1; i < adjList[0]; i++) {
+      unsigned int w = adjList[i];
+      if (result->distance[v] != INT_MAX && result->distance[v] + 1 < result->distance[w]) {
+        free(result->distance);
+        free(result->predecessor);
+        free(result->marked);
+        free(result);
+        free(adjList);
+        return NULL;
+      }
+    }
+    free(adjList);
+  }
+  */
 
   // Step 3 
   // Check for negative cycles
@@ -207,64 +201,42 @@ for (unsigned int i = 0; i < numVertices - 1; i++) {
     }
   }
   */
-  /*
+  
   // Step 3: Detect and Print Negative Cycles
-for (unsigned int v = 0; v < numVertices; v++) {
-    int* adjList = GraphGetAdjacentsTo(g, v);
-    int vertexDegree = GraphIsDigraph(result->graph) ? GraphGetVertexOutDegree(g, v) : GraphGetVertexDegree(g, v);
-    
-    for (unsigned int i = 0; i < vertexDegree; i++) {
-        unsigned int w = adjList[i];
-        if (result->distance[v] != INT_MAX && result->distance[v] + 1 < result->distance[w]) {
-            printf("Negative cycle detected starting from vertex %u.\n", w);
-
-            // Trace the negative cycle
-            unsigned int x = w;
-            for (unsigned int j = 0; j < numVertices; j++) x = result->predecessor[x]; // Step into the cycle
-            
-            unsigned int cycleStart = x;
-            printf("Cycle: ");
-            do {
-                printf("%u -> ", x);
-                x = result->predecessor[x];
-            } while (x != cycleStart);
-            printf("%u\n", cycleStart);
-
-            // Clean up memory
-            free(adjList);
-            free(result->distance);
-            free(result->predecessor);
-            free(result->marked);
-            free(result);
-            return NULL;
-        }
-    }
-    free(adjList);
-}
-*/
-
-  return result;
-}
-
-  // Step 3 - simple
-  // Check for negative cycles
-  /*
   for (unsigned int v = 0; v < numVertices; v++) {
     int* adjList = GraphGetAdjacentsTo(g, v);
-    for (unsigned int i = 0; i < GraphGetVertexOutDegree(g, v); i++) {
+    
+    for (unsigned int i = 1; i < adjList[0]; i++) {
       unsigned int w = adjList[i];
       if (result->distance[v] != INT_MAX && result->distance[v] + 1 < result->distance[w]) {
+        printf("Negative cycle detected starting from vertex %u.\n", w);
+
+        // Trace the negative cycle
+        unsigned int x = w;
+        for (unsigned int j = 0; j < numVertices; j++) x = result->predecessor[x]; // Step into the cycle
+        
+        unsigned int cycleStart = x;
+        printf("Cycle: ");
+        do {
+          printf("%u -> ", x);
+          x = result->predecessor[x];
+        } while (x != cycleStart);
+        printf("%u\n", cycleStart);
+
+        // Clean up memory
+        free(adjList);
         free(result->distance);
         free(result->predecessor);
         free(result->marked);
         free(result);
-        free(adjList);
         return NULL;
       }
     }
     free(adjList);
   }
-  */
+
+  return result;
+}
 
 void GraphBellmanFordAlgDestroy(GraphBellmanFordAlg** p) {
   assert(*p != NULL);
