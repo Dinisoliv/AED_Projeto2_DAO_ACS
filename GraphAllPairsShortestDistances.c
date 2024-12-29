@@ -50,8 +50,20 @@ GraphAllPairsShortestDistances* GraphAllPairsShortestDistancesExecute(
     res->distance[i] = (int*)malloc(numVertices * sizeof(int));
     // Ensures the memory allocation is succesful
     assert(res->distance[i] != NULL);
+    for (unsigned int j = 0; j < numVertices; j++) {
+      if (i == j) {
+        res->distance[i][j] = 0; // Distance to itself is 0
+      } else {
+        res->distance[i][j] = -1; // Initialize as INFINITY
+      }
+    }
   }
 
+  GraphBellmanFordAlg* bfa = GraphBellmanFordAlgExecute(g, 0);
+    for (unsigned int v = 0; v < numVertices; v++) {
+      printf("Vertex %u reached? %d\n", v, GraphBellmanFordAlgReached(bfa, v));
+    }
+    GraphBellmanFordAlgDestroy(&bfa);
   // Computes the shortest distances using Bellman-Ford Algorithm
   for (unsigned int v = 0; v < numVertices; v++) {
     GraphBellmanFordAlg* bfa = GraphBellmanFordAlgExecute(g, v);
@@ -60,9 +72,7 @@ GraphAllPairsShortestDistances* GraphAllPairsShortestDistancesExecute(
       // Saves the shortest distance in the graph  
       if (GraphBellmanFordAlgReached(bfa, w)) {
         res->distance[v][w] = GraphBellmanFordAlgDistance(bfa, w);
-      } else { // If there is no possible distance between v and w vertices 
-        res->distance[v][w] = -1; // INFINITY
-      }
+      } 
     }
 
     GraphBellmanFordAlgDestroy(&bfa);

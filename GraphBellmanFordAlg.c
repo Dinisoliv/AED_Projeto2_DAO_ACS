@@ -86,6 +86,7 @@ GraphBellmanFordAlg* GraphBellmanFordAlgExecute(Graph* g,
   {
     result->distance[i] = INT_MAX;
     result->predecessor[i] = -1;
+    result->marked[i] = 0;
   }
   result->distance[startVertex] = 0;
 
@@ -108,6 +109,7 @@ GraphBellmanFordAlg* GraphBellmanFordAlgExecute(Graph* g,
         if (result->distance[v] != INT_MAX && result->distance[v] + 1 < result->distance[w]) {
           result->distance[w] = result->distance[v] + 1;
           result->predecessor[w] = v;
+          result->marked[w] = 1;
           relaxed = 1;
         }
       }      
