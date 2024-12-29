@@ -35,9 +35,40 @@ GraphAllPairsShortestDistances* GraphAllPairsShortestDistancesExecute(
     Graph* g) {
   assert(g != NULL);
 
-  // COMPLETE THE CODE
+  unsigned int numVertices = GraphGetNumVertices(g);
 
-  return NULL;
+   // Allocates the memory for the structure
+  GraphAllPairsShortestDistances* res =  (GraphAllPairsShortestDistances*)malloc(sizeof(GraphAllPairsShortestDistances));
+
+  res->graph = g;
+  // Allocates the memory for the distance matrix
+  res->distance = (int**)malloc(numVertices * sizeof(int*));
+  // Ensures the memory allocation is succesful
+  assert(res->distance != NULL);
+  // Loop to alocate the memory for every distance in the matrix
+  for (unsigned int i = 0; i < numVertices; i++) {
+    res->distance[i] = (int*)malloc(numVertices * sizeof(int));
+    // Ensures the memory allocation is succesful
+    assert(res->distance[i] != NULL);
+  }
+
+  // Computes the shortest distances using Bellman-Ford Algorithm
+  for (unsigned int v = 0; v < numVertices; v++) {
+    GraphBellmanFordAlg* bfa = GraphBellmanFordAlgExecute(g, v);
+
+    for (unsigned int w = 0; w < numVertices; w++) {
+      // Saves the shortest distance in the graph  
+      if (GraphBellmanFordAlgReached(bfa, w)) {
+        res->distance[v][w] = GraphBellmanFordAlgDistance(bfa, w);
+      } else { // If there is no possible distance between v and w vertices 
+        res->distance[v][w] = -1; // INFINITY
+      }
+    }
+
+    GraphBellmanFordAlgDestroy(&bfa);
+  }
+
+  return res;
 }
 
 void GraphAllPairsShortestDistancesDestroy(GraphAllPairsShortestDistances** p) {
