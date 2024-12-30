@@ -112,9 +112,7 @@ GraphBellmanFordAlg* GraphBellmanFordAlgExecute(Graph* g,
       free(adjList);
     }
     if (!relaxed)
-    {
       break;
-    }
   }
   /*
   // Step 3 - simple
