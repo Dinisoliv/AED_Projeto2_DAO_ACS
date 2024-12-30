@@ -42,8 +42,6 @@ struct _GraphEccentricityMeasures {
 GraphEccentricityMeasures* GraphEccentricityMeasuresCompute(Graph* g) {
   assert(g != NULL);
 
-  // COMPLETE THE CODE
-  // CREATE AUXILIARY (static) FUNCTIONS, IF USEFUL
   // Graph radius --- the smallest vertex eccentricity value
   // Graph diameter --- the largest vertex eccentricity value
   // Do not forget that -1 represents an IDEFINITE value

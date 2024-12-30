@@ -10,8 +10,18 @@
 
 #include "Graph.h"
 #include "GraphBellmanFordAlg.h"
+#include "instrumentation.h"
 
 int main(void) {
+  
+  // Instrumentation
+  InstrCalibrate();
+
+  double startTime;
+
+  InstrReset();
+  startTime = cpu_time();
+
   // What kind of graph is dig01?
   Graph* dig01 = GraphCreate(6, 1, 0);
   GraphAddEdge(dig01, 1, 2);
@@ -36,6 +46,10 @@ int main(void) {
 
     GraphBellmanFordAlgDestroy(&BF_result);
   }
+
+  double elapsedTime1 = cpu_time() - startTime;
+
+  startTime = cpu_time();
 
   // What kind of graph is g01?
   Graph* g01 = GraphCreate(6, 0, 0);
@@ -67,6 +81,10 @@ int main(void) {
     GraphBellmanFordAlgDestroy(&BF_result);
   }
 
+  double elapsedTime2 = cpu_time() - startTime;
+
+  startTime = cpu_time();
+
   // Reading a directed graph from file
   FILE* file = fopen("DG_2.txt", "r");
   Graph* dig03 = GraphFromFile(file);
@@ -89,6 +107,17 @@ int main(void) {
 
     GraphBellmanFordAlgDestroy(&BF_result);
   }
+
+  double elapsedTime3 = cpu_time() - startTime;
+
+  printf("Elapsed time1: %f seconds\n", elapsedTime1);
+  printf("Elapsed time2: %f seconds\n", elapsedTime2);
+  printf("Elapsed time3: %f seconds\n", elapsedTime3);
+
+  printf("Elapsed time1: %f miliseconds\n", elapsedTime1*1000);
+  printf("Elapsed time2: %f miliseconds\n", elapsedTime2*1000);
+  printf("Elapsed time3: %f miliseconds\n", elapsedTime3*1000);
+
 
   GraphDestroy(&g01);
   GraphDestroy(&dig01);

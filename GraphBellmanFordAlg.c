@@ -50,14 +50,10 @@ GraphBellmanFordAlg* GraphBellmanFordAlgExecute(Graph* g,
 
   unsigned int numVertices = GraphGetNumVertices(g);
 
-  //
-  // TO BE COMPLETED ...
-  //
   // CREATE AND INITIALIZE
   // result->marked
   // result->distance
   // result->predecessor
-  //
 
   // Mark all vertices as not yet visited, i.e., ZERO
   
