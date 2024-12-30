@@ -84,8 +84,13 @@ GraphEccentricityMeasures* GraphEccentricityMeasuresCompute(Graph* g) {
     res->eccentricity[v] = maxDist;
 
     // Updates the radious and diameter
-    if (maxDist < res->graphRadius) res->graphRadius = maxDist;
+    if (maxDist < res->graphRadius && maxDist != 0) res->graphRadius = maxDist;
     if (maxDist > res->graphDiameter) res->graphDiameter = maxDist;
+  }
+
+  //Handle disconected graphs parts
+  if (res->graphRadius == INT_MAX) {
+    res->graphRadius = res->graphDiameter;
   }
 
   // Gets the set of central vertices(set of vertices that have eccentricity == radius)
