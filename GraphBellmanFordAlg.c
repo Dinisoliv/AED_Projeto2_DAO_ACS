@@ -206,7 +206,7 @@ GraphBellmanFordAlg* GraphBellmanFordAlgExecute(Graph* g,
   
   // Step 3: Detect and Print Negative Cycles
   for (unsigned int v = 0; v < numVertices; v++) {
-    int* adjList = GraphGetAdjacentsTo(g, v);
+    unsigned* adjList = GraphGetAdjacentsTo(g, v);
     
     for (unsigned int i = 1; i < adjList[0]; i++) {
       unsigned int w = adjList[i];
